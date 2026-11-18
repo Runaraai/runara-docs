@@ -9,7 +9,8 @@ A static site published via GitHub Pages at
 **https://runaraai.github.io/runara-docs/**. Each page is a
 single self-contained `.html` file (own `<style>`, no shared CSS file, no
 build step) — most started life as a Claude Artifact and were republished
-here as plain static pages. `index.html` is the landing page and must link
+here as plain static pages. `index.html` is the landing page (a chooser between Artifacts and the
+Google Drive docs folder); `artifacts.html` is the list that must link
 every other page.
 
 There is no build/CI step. Pushing to `master` deploys automatically —
@@ -24,7 +25,7 @@ GitHub Pages rebuilds and serves the new content within roughly a minute.
    each page keeps its own copy of its theme variables, by design, so pages
    stay independently copy-pasteable.
 2. Add the nav snippet (below) so Home/Top work like every other page.
-3. Add a `<li><a href="your-file.html">...</a></li>` entry to `index.html`'s
+3. Add a `<li><a href="your-file.html">...</a></li>` entry to `artifacts.html`'s
    `ul.docs` list — this is the only index of pages; a page not linked from
    here is effectively invisible.
 4. Commit and push to `master`. That's the entire deploy.
@@ -85,7 +86,7 @@ silently bump it.
   it means any single page can be read, edited or copy-pasted in isolation
   without hunting for a shared template.
 - Page titles: a short name (2–4 words), set via `<title>`, matching what
-  `index.html`'s list entry calls it.
+  `artifacts.html`'s list entry calls it.
 - Don't invent a new CSS variable naming scheme per page for the nav
   snippet — reuse the page's existing `--accent`/`--new`/`--fg-dim`/etc. so
   the floating Home/Top pills match that page's palette instead of clashing

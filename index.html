@@ -30,54 +30,33 @@
   .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent)}
   h1{font-size:clamp(28px,4vw,38px); margin:10px 0 10px; font-weight:700}
   .thesis{font-size:16px; color:var(--fg-dim); margin:0 0 36px; max-width:62ch}
-  ul.docs{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px}
-  ul.docs li{background:var(--surface); border:1px solid var(--border); border-radius:8px}
-  ul.docs a{display:block; padding:18px 20px; text-decoration:none; color:var(--fg)}
-  ul.docs a:hover{border-color:var(--accent)}
-  ul.docs .t{font-weight:600; font-size:16px}
-  ul.docs .d{color:var(--fg-dim); font-size:13.5px; margin-top:4px}
+  .choices{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  @media (max-width:560px){ .choices{grid-template-columns:1fr} }
+  .choices a{display:flex; flex-direction:column; height:100%; padding:22px 22px 20px; background:var(--surface); border:1px solid var(--border); border-radius:10px; text-decoration:none; color:var(--fg)}
+  .choices a:hover{border-color:var(--accent)}
+  .choices .t{font-family:var(--display); font-weight:600; font-size:20px}
+  .choices .d{color:var(--fg-dim); font-size:13.5px; margin-top:6px; flex:1}
+  .choices .go{font-family:var(--mono); font-size:12px; color:var(--accent); margin-top:16px}
   footer{font-size:12px; color:var(--fg-dim); border-top:1px solid var(--border); padding-top:18px; margin-top:40px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="eyebrow">Runara &middot; internal docs</div>
+  <div class="eyebrow">Runara &middot; engineering docs</div>
   <h1>Runara Engineering Docs</h1>
-  <p class="thesis">The platform overview digest, the three full briefs it cites, the Jev benchmark report, and the pipeline reference.</p>
-  <ul class="docs">
-    <li><a href="runara-platform-overview.html">
-      <div class="t">Runara Platform Overview</div>
-      <div class="d">Summary digest &mdash; harness-aware serving, the single-API question, and the scale-out roadmap, in one picture.</div>
-    </a></li>
-    <li><a href="harness-aware-serving-v3.html">
-      <div class="t">Harness-Aware Serving v3</div>
-      <div class="d">Product definition draft &mdash; inference, fine-tuning and RL rollouts as three harnesses, one thesis.</div>
-    </a></li>
-    <li><a href="one-api-every-model.html">
-      <div class="t">One API, Every Model</div>
-      <div class="d">Research brief on OpenRouter, and whether Runara is already (or should become) a single routing API.</div>
-    </a></li>
-    <li><a href="runara-scale-out-roadmap.html">
-      <div class="t">Runara Scale-Out Roadmap</div>
-      <div class="d">Nov 2026 &ndash; Apr 2027 plan: serverless deployments, four new BYOC clouds, Kubernetes autoscaling.</div>
-    </a></li>
-    <li><a href="jev-benchmark-report.html">
-      <div class="t">Jev Benchmark Report</div>
-      <div class="d">Official Jev 1.14 vs open Jev models (JEV-27B and AutoTrust v1.1): accuracy, fp4 quality, serving cost on Blackwell vs H100, and platform readiness.</div>
-    </a></li>
-    <li><a href="runara-pipeline-reference.html">
-      <div class="t">Runara Pipeline Reference</div>
-      <div class="d">Technical reference for the performance-prediction and deployment pipeline &mdash; Step 1 through Layer 6, infrastructure, and a worked example.</div>
-    </a></li>
-    <li><a href="harness-aware-serving-implementation-plan.html">
-      <div class="t">Serving Implementation Plan</div>
-      <div class="d">Phased plan for harness-aware serving &mdash; opt-in dedicated GCP pilot with session-aware routing, telemetry and billing correctness, benchmarks, release gates and rollback.</div>
-    </a></li>
-    <li><a href="amd-mi325x-characterization.html">
-      <div class="t">AMD MI325X Characterization</div>
-      <div class="d">M0 characterization results on AMD MI325X &mdash; Qwen3-30B-A3B, DeepSeek-V2-Lite and OLMoE-1B-7B across vllm, sglang and atom, with Runara-selected configs vs engine defaults.</div>
-    </a></li>
-  </ul>
+  <p class="thesis">Where would you like to look?</p>
+  <div class="choices">
+    <a href="artifacts.html">
+      <div class="t">Artifacts</div>
+      <div class="d">Published briefs, reports and references &mdash; platform overview, serving, benchmarks, pipeline and roadmap.</div>
+      <div class="go">Open artifacts &rarr;</div>
+    </a>
+    <a href="https://drive.google.com/drive/folders/1unZmCTAA6Gq7AzZPedwDb0Ly0H0SDipx" target="_blank" rel="noopener noreferrer">
+      <div class="t">Runara GDrive Docs</div>
+      <div class="d">The shared Google Drive folder of Runara documents. Opens in Google Drive; access depends on your Google account.</div>
+      <div class="go">Open Google Drive &nearr;</div>
+    </a>
+  </div>
   <footer>Published from Claude artifacts.</footer>
 </div>
 </body>
