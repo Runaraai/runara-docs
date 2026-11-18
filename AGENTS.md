@@ -1,4 +1,4 @@
-# AGENTS.md — runara-platform-overview (Runara Engineering Docs)
+# AGENTS.md — runara-docs (Runara Engineering Docs)
 
 Guidance for any coding assistant (Claude Code, Codex, Cursor, etc.) adding or
 editing pages in this repo.
@@ -6,7 +6,7 @@ editing pages in this repo.
 ## What this repo is
 
 A static site published via GitHub Pages at
-**https://runaraai.github.io/runara-platform-overview/**. Each page is a
+**https://runaraai.github.io/runara-docs/**. Each page is a
 single self-contained `.html` file (own `<style>`, no shared CSS file, no
 build step) — most started life as a Claude Artifact and were republished
 here as plain static pages. `index.html` is the landing page and must link
