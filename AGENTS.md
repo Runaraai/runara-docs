@@ -33,7 +33,7 @@ GitHub Pages rebuilds and serves the new content within roughly a minute.
 ## The nav snippet every content page needs
 
 `index.html` is the home page and does **not** get this (there's nowhere
-"home" to link to). Every other page should have both a Home link
+"home" to link to). Every other page should have both an Artifacts link (back to the list)
 (top-right) and a back-to-top link (bottom-right), fixed to the viewport.
 
 Add to the page's `<style>` block — reuse whatever the page already calls
@@ -54,7 +54,7 @@ whichever comes first in that file's layout), before the page's main
 wrapper div:
 
 ```html
-<a class="site-home" href="index.html">&larr; Home</a>
+<a class="site-home" href="artifacts.html">&larr; Artifacts</a>
 <a class="to-top" href="#top">&uarr; Top</a>
 
 <div class="wrap" id="top">
