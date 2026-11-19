@@ -1,0 +1,3 @@
+# Google Doc IDs the sync must never import (test runs, private meetings).
+# Format: <doc id>   # note about what it was
+1y7kGtG53_XII-wYBAh9oYgHKXKycOCEWEf6VgBvGQvY   # 2026-11-19 test meeting

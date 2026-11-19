@@ -33,3 +33,6 @@ Remaining setup (already done: project, service account, workload identity pool)
 
 Gemini notes only exist for meetings where "Take notes for me" was on, and are owned by the organizer,
 so list everyone who may organize meetings.
+
+To keep a Drive doc out of the site (e.g. a test meeting), add its doc ID (the `source_id` in the note's header)
+to `scripts/meeting-notes-ignore.txt` and delete the note file; the sync will skip it from then on.

@@ -32,6 +32,15 @@ API = "https://www.googleapis.com/drive/v3"
 TITLE_RE = re.compile(r"^(?P<title>.*?)\s+(?:-\s+)?(?P<y>\d{4})/(?P<m>\d{2})/(?P<d>\d{2})\b(?P<rest>.*?)\s*-\s+Notes by Gemini\s*$")
 
 
+IGNORE_FILE = pathlib.Path(__file__).resolve().parent / "meeting-notes-ignore.txt"
+
+
+def load_ignored():
+    if not IGNORE_FILE.exists():
+        return set()
+    return {l.split("#", 1)[0].strip() for l in IGNORE_FILE.read_text(encoding="utf-8").splitlines() if l.split("#", 1)[0].strip()}
+
+
 def load_users():
     users = []
     for line in USERS_FILE.read_text(encoding="utf-8").splitlines():
@@ -157,6 +166,7 @@ def main():
     since = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=int(os.environ.get("LOOKBACK_DAYS", "3")))).strftime("%Y-%m-%dT%H:%M:%SZ")
     NOTES_DIR.mkdir(exist_ok=True)
     notes = existing_notes()
+    ignored = load_ignored()
     added = 0
     for user in users:
         try:
@@ -177,6 +187,8 @@ def main():
                 break
             data = r.json()
             for f in data.get("files", []):
+                if f["id"] in ignored:
+                    continue
                 title, date, time_ = parse_name(f["name"], f["createdTime"])
                 if f["id"] in notes:
                     if backfill_time(notes[f["id"]], time_):
