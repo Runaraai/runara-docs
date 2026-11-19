@@ -15,6 +15,7 @@ Env: SERVICE_ACCOUNT_EMAIL, LOOKBACK_DAYS (default 3). Application Default Crede
 (the workflow's google-github-actions/auth step does this).
 """
 import datetime as dt
+import base64
 import json
 import os
 import pathlib
@@ -56,6 +57,25 @@ def slug(text):
 
 def one_line(text):
     return re.sub(r"\s+", " ", text).strip()
+
+
+IMG_RE = re.compile(r"^\[(image\d+)\]:\s*<data:image/(png|jpeg|jpg|gif|webp);base64,([A-Za-z0-9+/=\s]+)>[ \t]*$", re.M)
+SURVEY_RE = re.compile(r"^\*Please \*\*rate the new Quick notes tab\*\*.*$\n?", re.M)
+
+
+def clean_body(body, stem):
+    """Drop Google's survey banner and move base64-embedded images out to meeting-notes/images/."""
+    body = SURVEY_RE.sub("", body)
+
+    def to_file(m):
+        name, ext, data = m.group(1), m.group(2).replace("jpeg", "jpg"), m.group(3)
+        img_dir = NOTES_DIR / "images"
+        img_dir.mkdir(exist_ok=True)
+        fname = f"{stem}-{name}.{ext}"
+        (img_dir / fname).write_bytes(base64.b64decode(re.sub(r"\s+", "", data)))
+        return f"[{name}]: meeting-notes/images/{fname}"
+
+    return IMG_RE.sub(to_file, body)
 
 
 def existing_source_ids():
@@ -162,6 +182,7 @@ def main():
                 path = NOTES_DIR / f"{date}-{slug(title)}.md"
                 if path.exists():
                     path = NOTES_DIR / f"{date}-{slug(title)}-{f['id'][:6]}.md"
+                body = clean_body(body, path.stem)
                 path.write_text(head + body.strip() + "\n", encoding="utf-8")
                 seen.add(f["id"])
                 added += 1
