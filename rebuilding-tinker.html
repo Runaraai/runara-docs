@@ -1,0 +1,670 @@
+<!doctype html><html><head><meta charset=utf8><title>Rebuilding Tinker</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: single reading column, full-bleed bands for the mechanism sections,
+     each band's inner wrapper carrying the side gutter. */
+  :root {
+    --bg: #f5f8f6;
+    --surface: #ffffff;
+    --surface-2: #eef3f0;
+    --fg: #16211c;
+    --fg-muted: #5c6b63;
+    --line: #d5e0da;
+    --accent: #2c7a52;
+    --accent-soft: #e3f0e8;
+    --warn: #8a5a08;
+    --warn-soft: #f7ecd9;
+    --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1311;
+      --surface: #151d19;
+      --surface-2: #1b241f;
+      --fg: #dde7e1;
+      --fg-muted: #93a49b;
+      --line: #27332c;
+      --accent: #74bd8f;
+      --accent-soft: #17291f;
+      --warn: #d7a657;
+      --warn-soft: #2a2114;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1311;
+    --surface: #151d19;
+    --surface-2: #1b241f;
+    --fg: #dde7e1;
+    --fg-muted: #93a49b;
+    --line: #27332c;
+    --accent: #74bd8f;
+    --accent-soft: #17291f;
+    --warn: #d7a657;
+    --warn-soft: #2a2114;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 50rem;
+    margin-inline: auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .band { background: var(--surface-2); border-block: 1px solid var(--line); }
+  .band > .wrap { padding-block: 3rem; }
+  section > .wrap { padding-block: 3rem; }
+
+  h1 {
+    font-family: var(--font-mono);
+    font-size: clamp(2rem, 7vw, 3.1rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    text-wrap: balance;
+    margin: 0 0 1rem;
+  }
+  h2 {
+    font-family: var(--font-mono);
+    font-size: clamp(1.3rem, 3.6vw, 1.65rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    text-wrap: balance;
+    margin: 0 0 1rem;
+  }
+  h3 {
+    font-size: 1.02rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 2rem 0 0.5rem;
+  }
+  p { margin: 0 0 1.05rem; max-width: 62ch; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  strong { font-weight: 600; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.9rem;
+  }
+  .lede { font-size: 1.12rem; color: var(--fg-muted); max-width: 58ch; }
+  .meta {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--fg-muted);
+    border-top: 1px solid var(--line);
+    padding-top: 0.9rem;
+    margin-top: 2rem;
+  }
+
+  header.hero > .wrap { padding-block: 3.5rem 2.5rem; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 3px;
+    padding: 1.1rem 1.25rem;
+    margin: 1.5rem 0;
+  }
+  .callout > :last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    margin: 1.25rem 0;
+  }
+  code { font-family: var(--font-mono); font-size: 0.88em; }
+  p code, li code, td code {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 0.08em 0.34em;
+  }
+  pre code { background: none; border: 0; padding: 0; }
+  .c { color: var(--fg-muted); }
+  .k { color: var(--accent); }
+
+  ul, ol { margin: 0 0 1.05rem; padding-left: 1.15rem; max-width: 62ch; }
+  li { margin-bottom: 0.45rem; }
+
+  figure { margin: 1.75rem 0; }
+  figure svg { display: block; width: 100%; max-width: 100%; height: auto; color: var(--fg); }
+  /* A real rule beats the presentation attribute, so the diagrams keep the mono
+     face even where var() in an SVG attribute is not honoured. */
+  figure svg text { font-family: var(--font-mono); }
+  figcaption {
+    font-size: 0.84rem;
+    color: var(--fg-muted);
+    margin-top: 0.7rem;
+    max-width: 60ch;
+  }
+  .scroller { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    font-variant-numeric: tabular-nums;
+    margin: 1.25rem 0;
+    min-width: 30rem;
+  }
+  th, td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--line); }
+  th {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    font-weight: 500;
+  }
+  td.num { text-align: right; }
+  tbody tr:last-child td { border-bottom: 0; }
+
+  .steps { list-style: none; padding: 0; counter-reset: s; max-width: 100%; }
+  .steps > li {
+    counter-increment: s;
+    position: relative;
+    padding-left: 2.6rem;
+    margin-bottom: 1.4rem;
+  }
+  .steps > li::before {
+    content: counter(s);
+    position: absolute;
+    left: 0;
+    top: 0.05rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: grid;
+    place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .steps h3 { margin-top: 0; }
+
+  .have {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 0.9rem;
+    margin: 1.4rem 0;
+    padding: 0;
+    list-style: none;
+    max-width: 100%;
+  }
+  .have li {
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 0.85rem 0.95rem;
+    margin: 0;
+  }
+  .have b { display: block; font-size: 0.93rem; margin-bottom: 0.2rem; }
+  .have span { font-size: 0.82rem; color: var(--fg-muted); line-height: 1.5; }
+  .have .file { font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); }
+
+  .verdict {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--accent-soft);
+    color: var(--accent);
+    vertical-align: 0.15em;
+  }
+  .verdict.gap { background: var(--warn-soft); color: var(--warn); }
+
+  footer > .wrap { padding-block: 2.5rem 3.5rem; }
+  footer ul { list-style: none; padding: 0; font-size: 0.86rem; }
+  footer li { margin-bottom: 0.3rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  .site-home{position:fixed; top:14px; right:16px; z-index:1000; font-family:var(--font-mono); font-size:12px; color:var(--accent); text-decoration:none; border:1px solid var(--line); border-radius:6px; padding:7px 12px; background:var(--surface)}
+  .site-home:hover{border-color:var(--accent)}
+  .to-top{position:fixed; bottom:18px; right:16px; z-index:1000; font-family:var(--font-mono); font-size:12px; color:var(--fg-muted); text-decoration:none; border:1px solid var(--line); border-radius:6px; padding:7px 12px; background:var(--surface)}
+  .to-top:hover{color:var(--accent); border-color:var(--accent)}
+  html{scroll-behavior:smooth}
+  @media (max-width:560px){ .site-home,.to-top{font-size:11px; padding:6px 10px} }
+</style>
+
+<a class="site-home" href="artifacts.html">&larr; Artifacts</a>
+<a class="to-top" href="#top">&uarr; Top</a>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <p class="eyebrow">Thinking Machines · training infrastructure</p>
+    <h1>Rebuilding Tinker</h1>
+    <p class="lede">
+      Tinker sells fine-tuning as an API where you keep the training loop and they
+      keep the GPUs. The interesting part is not the API. It is the one constraint
+      underneath it that turns a GPU rental business into a per-token one.
+    </p>
+    <p class="meta">Researched 18 Nov 2026 · prices from the official Tinker docs</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>The one-sentence version</h2>
+    <p>
+      Fine-tuning a model normally means renting a cluster, wiring up distributed
+      training, handling checkpoints, and recovering when a node dies at hour 14.
+      That work is most of the effort and none of the thinking.
+    </p>
+    <p>
+      Tinker cuts the job along a different line. <strong>You write the training
+      loop in Python on your own machine.</strong> When that loop needs actual GPU
+      math, it makes a network call. Their cluster runs it and sends the result back.
+    </p>
+    <p>
+      It is deliberately not an upload-your-data-get-a-model button. Every decision
+      that changes model quality stays with you. Every decision that is just plumbing
+      goes to them.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 720 260" role="img" aria-label="The training loop runs on the user's laptop; forward_backward, optim_step and sample calls cross the network to a GPU worker that holds the base model weights and the user's LoRA adapter.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <polygon points="0,1 10,5 0,9" fill="currentColor"/>
+          </marker>
+          <marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <polygon points="0,1 10,5 0,9" fill="var(--accent)"/>
+          </marker>
+        </defs>
+
+        <!-- left: your machine -->
+        <rect x="8" y="40" width="220" height="180" rx="4" fill="var(--surface)" stroke="currentColor" stroke-opacity="0.35"/>
+        <text x="20" y="28" font-family="var(--font-mono)" font-size="12" fill="currentColor" fill-opacity="0.65">YOUR MACHINE · CPU</text>
+        <rect x="26" y="62" width="184" height="136" rx="3" fill="var(--surface-2)" stroke="currentColor" stroke-opacity="0.2"/>
+        <text x="40" y="86" font-family="var(--font-mono)" font-size="12" fill="currentColor">for batch in data:</text>
+        <text x="56" y="110" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">forward_backward()</text>
+        <text x="56" y="132" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">optim_step()</text>
+        <text x="56" y="154" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">sample()</text>
+        <text x="40" y="180" font-family="var(--font-mono)" font-size="12" fill="currentColor" fill-opacity="0.6">your loss, your loop</text>
+
+        <!-- network -->
+        <line x1="232" y1="112" x2="356" y2="112" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arA)"/>
+        <text x="294" y="104" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">batch + adapter id</text>
+        <line x1="356" y1="150" x2="232" y2="150" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.6" marker-end="url(#ar)"/>
+        <text x="294" y="168" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="currentColor" fill-opacity="0.6">loss + logprobs</text>
+        <text x="294" y="200" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="currentColor" fill-opacity="0.45">one RPC per step</text>
+
+        <!-- right: their GPU -->
+        <rect x="360" y="40" width="352" height="180" rx="4" fill="var(--surface)" stroke="currentColor" stroke-opacity="0.35"/>
+        <text x="372" y="28" font-family="var(--font-mono)" font-size="12" fill="currentColor" fill-opacity="0.65">THEIR CLUSTER · GPU</text>
+        <rect x="378" y="62" width="316" height="62" rx="3" fill="var(--surface-2)" stroke="currentColor" stroke-opacity="0.2"/>
+        <text x="394" y="88" font-family="var(--font-mono)" font-size="12" fill="currentColor">base model weights</text>
+        <text x="394" y="108" font-family="var(--font-mono)" font-size="11" fill="currentColor" fill-opacity="0.55">resident · shared · never yours alone</text>
+        <rect x="378" y="134" width="316" height="62" rx="3" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity="0.5"/>
+        <text x="394" y="160" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">your LoRA adapter</text>
+        <text x="394" y="180" font-family="var(--font-mono)" font-size="11" fill="var(--accent)" fill-opacity="0.75">small · swapped in · the only thing that is yours</text>
+      </svg>
+      <figcaption>
+        The split. Control flow never leaves your machine; only tensors cross the
+        wire. The base weights on the right are shared infrastructure, and the
+        adapter is the entire product you are building.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<div class="band">
+  <div class="wrap">
+    <p class="eyebrow">The surface</p>
+    <h2>Four verbs</h2>
+    <p>
+      The whole API is small enough to hold in your head. These primitives are
+      enough to build any post-training algorithm: supervised fine-tuning, PPO,
+      GRPO, DPO, distillation.
+    </p>
+<pre><code><span class="c"># runs locally; each call is a network round trip</span>
+fwd = <span class="k">await</span> client.forward_backward(batch, loss_fn=<span class="k">"cross_entropy"</span>)
+<span class="k">await</span> client.optim_step(AdamParams(lr=<span class="k">1e-4</span>))
+
+<span class="c"># RL loops need to generate from the current policy, mid-training</span>
+out = <span class="k">await</span> client.sample(prompt, num_samples=<span class="k">8</span>)
+
+<span class="c"># durable state, so a dead worker is not a dead run</span>
+<span class="k">await</span> client.save_state(name=<span class="k">"step-400"</span>)</code></pre>
+    <p>
+      Switching models is reported to be a one-string change. That only works
+      because the client holds no model-specific code — it marshals data and awaits
+      futures, and everything that knows about architecture lives server-side.
+    </p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The mechanism</p>
+    <h2>Why it can be sold by the token</h2>
+    <p>
+      Tinker only does <strong>LoRA</strong>, never full fine-tuning. Read as a
+      feature list that is a limitation. Read as a business, it is the entire design.
+    </p>
+    <p>
+      A large base model is tens or hundreds of gigabytes and takes real time to
+      load onto GPUs. A LoRA adapter is a few hundred megabytes at most. So you pay
+      the expensive load <em>once</em>, keep the base weights resident, and swap
+      cheap adapters per request. One pool of GPUs holding Qwen3.5-397B serves
+      every customer fine-tuning that model, interleaved.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 720 300" role="img" aria-label="Comparison: dedicated rental leaves one GPU idle between a single tenant's steps, while pooled LoRA serving interleaves three tenants' adapters over one resident base model with no idle gaps.">
+        <defs>
+          <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <polygon points="0,1 10,5 0,9" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <text x="8" y="20" font-family="var(--font-mono)" font-size="12" fill="currentColor" fill-opacity="0.65">DEDICATED RENTAL — billed per GPU-hour</text>
+        <rect x="8" y="32" width="704" height="62" rx="3" fill="var(--surface)" stroke="currentColor" stroke-opacity="0.3"/>
+        <text x="20" y="54" font-family="var(--font-mono)" font-size="11" fill="currentColor" fill-opacity="0.6">one tenant</text>
+        <rect x="20" y="62" width="88" height="20" rx="2" fill="var(--accent)" fill-opacity="0.75"/>
+        <rect x="196" y="62" width="88" height="20" rx="2" fill="var(--accent)" fill-opacity="0.75"/>
+        <rect x="372" y="62" width="88" height="20" rx="2" fill="var(--accent)" fill-opacity="0.75"/>
+        <rect x="548" y="62" width="88" height="20" rx="2" fill="var(--accent)" fill-opacity="0.75"/>
+        <text x="152" y="77" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="currentColor" fill-opacity="0.45">idle</text>
+        <text x="328" y="77" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="currentColor" fill-opacity="0.45">idle</text>
+        <text x="504" y="77" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="currentColor" fill-opacity="0.45">idle</text>
+        <text x="660" y="77" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="currentColor" fill-opacity="0.45">idle</text>
+        <text x="8" y="112" font-family="var(--font-mono)" font-size="11" fill="currentColor" fill-opacity="0.55">the customer pays for the gaps — data loading, their own think time</text>
+
+        <text x="8" y="158" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">POOLED LoRA — billed per token</text>
+        <rect x="8" y="170" width="704" height="76" rx="3" fill="var(--surface)" stroke="var(--accent)" stroke-opacity="0.45"/>
+        <text x="20" y="192" font-family="var(--font-mono)" font-size="11" fill="currentColor" fill-opacity="0.6">base weights resident · adapters swap per request</text>
+        <rect x="20" y="200" width="88" height="20" rx="2" fill="var(--accent)" fill-opacity="0.85"/>
+        <rect x="112" y="200" width="88" height="20" rx="2" fill="var(--accent)" fill-opacity="0.5"/>
+        <rect x="204" y="200" width="88" height="20" rx="2" fill="var(--accent)" fill-opacity="0.28"/>
+        <rect x="296" y="200" width="88" height="20" rx="2" fill="var(--accent)" fill-opacity="0.85"/>
+        <rect x="388" y="200" width="88" height="20" rx="2" fill="var(--accent)" fill-opacity="0.5"/>
+        <rect x="480" y="200" width="88" height="20" rx="2" fill="var(--accent)" fill-opacity="0.28"/>
+        <rect x="572" y="200" width="88" height="20" rx="2" fill="var(--accent)" fill-opacity="0.85"/>
+        <rect x="664" y="200" width="40" height="20" rx="2" fill="var(--accent)" fill-opacity="0.5"/>
+        <text x="20" y="238" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" fill-opacity="0.9">tenant A</text>
+        <text x="112" y="238" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" fill-opacity="0.65">tenant B</text>
+        <text x="204" y="238" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" fill-opacity="0.5">tenant C</text>
+        <text x="8" y="272" font-family="var(--font-mono)" font-size="11" fill="currentColor" fill-opacity="0.55">the provider absorbs the gaps — and is the only one who can fill them</text>
+        <text x="8" y="292" font-family="var(--font-mono)" font-size="11" fill="currentColor" fill-opacity="0.4">time →</text>
+      </svg>
+      <figcaption>
+        The same hardware, two business models. Per-GPU-hour pricing hands idle
+        time to the customer. Per-token pricing takes it back — which is only
+        affordable if you actually achieve the interleaving on the bottom row.
+      </figcaption>
+    </figure>
+
+    <div class="callout">
+      <p>
+        <strong>The pricing model is a claim about utilization.</strong> Charging
+        per token means you have promised to eat every idle GPU-second. That is a
+        better product and a worse risk, and it is only solvent if demand for each
+        base model is dense enough to keep its pool busy.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="band">
+  <div class="wrap">
+    <p class="eyebrow">Engineering</p>
+    <h2>What is actually hard</h2>
+    <p>
+      The API is a weekend. These are the parts that take a team.
+    </p>
+
+    <h3>Keeping every pool warm</h3>
+    <p>
+      Tinker lists roughly twenty base models. Each needs its own resident pool, and
+      a pool with one active customer loses money. You either concentrate demand
+      onto few models or eat cold starts on the long tail.
+    </p>
+
+    <h3>Durable sessions</h3>
+    <p>
+      A fine-tuning run is a long stateful sequence, not a request. The adapter
+      weights and the optimizer moments have to survive a worker dying at step 3,000
+      and resume without the client noticing. That is the failure recovery the
+      product is selling.
+    </p>
+
+    <h3>Sampling against weights you are still training</h3>
+    <p>
+      RL loops generate from the current policy, then train on what they generated.
+      So an inference workload and a training workload share one set of live weights
+      and interleave on the same device. This is substantially harder than either
+      alone.
+    </p>
+
+    <h3>Metering you can bill from</h3>
+    <p>
+      Prefill, sampling and training are priced differently, so every request has to
+      be counted by phase, per tenant, accurately enough to put on an invoice and
+      defend when questioned.
+    </p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Reference</p>
+    <h2>What it costs</h2>
+    <p>
+      Per million tokens, from the official docs. Training is priced separately from
+      prefill and sampling, which is the tell that they are metering GPU work rather
+      than renting capacity.
+    </p>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>Model</th><th class="num">Prefill</th><th class="num">Sample</th><th class="num">Train</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Inkling 2 Small</td><td class="num">$0.30</td><td class="num">$1.00</td><td class="num">$1.50</td></tr>
+          <tr><td>Inkling</td><td class="num">$1.87</td><td class="num">$4.68</td><td class="num">$5.61</td></tr>
+          <tr><td>Qwen3.5-9B</td><td class="num">$0.30</td><td class="num">$0.81</td><td class="num">$1.46</td></tr>
+          <tr><td>Qwen3.5-397B-A17B</td><td class="num">$1.65</td><td class="num">$7.50</td><td class="num">$6.60</td></tr>
+          <tr><td>GPT-OSS-120B</td><td class="num">$0.33</td><td class="num">$0.84</td><td class="num">$0.74</td></tr>
+          <tr><td>DeepSeek-V4.1-Flash</td><td class="num">$0.60</td><td class="num">$3.60</td><td class="num">$4.98</td></tr>
+          <tr><td>Kimi-K3.1-Pro</td><td class="num">$6.00</td><td class="num">$25.00</td><td class="num">$32.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Checkpoint storage is $0.10/GB/month. The Nemotron family currently carries a
+      limited-time 50% discount, so those rates roughly double when it ends. Llama
+      has been retired and can no longer be used.
+    </p>
+    <div class="callout warn">
+      <p>
+        <strong>Sanity check the economics before believing them.</strong> Qwen3.5-9B
+        trains at $1.46 per million tokens. If a pooled GPU-hour costs you $2.50 all
+        in, you need to push roughly <strong>1.7M training tokens per GPU-hour</strong>
+        just to break even on that model. Whether that is comfortable or impossible
+        depends entirely on sequence length, batch shape and how well you interleave —
+        this arithmetic sets the bar, it does not clear it.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="band">
+  <div class="wrap">
+    <p class="eyebrow">Runara</p>
+    <h2>How much of this do you already have</h2>
+    <p>
+      More than you would expect. The pieces that usually take longest — multi-cloud
+      provisioning and per-token metering — are already in the codebase.
+    </p>
+
+    <ul class="have">
+      <li>
+        <b>Eight-provider GPU provisioning <span class="verdict">have</span></b>
+        <span>AWS, GCP, Azure, Lambda, RunPod, DigitalOcean, TPU, GKE.</span>
+        <span class="file">aws.ts · gcp.ts · tpuDeploy.ts · k8sDeploy.ts</span>
+      </li>
+      <li>
+        <b>Per-token metering <span class="verdict">have</span></b>
+        <span>Billing mode, per-million quotes, cursor-based metering and billed-token accounting already ship.</span>
+        <span class="file">tokenBillingQuote · tokenMeterCursor</span>
+      </li>
+      <li>
+        <b>Model catalog <span class="verdict">have</span></b>
+        <span>Per-model, per-provider deployment configs and hardware mappings.</span>
+        <span class="file">models.ts · modelAwsConfigs</span>
+      </li>
+      <li>
+        <b>Tenancy, keys, quotas <span class="verdict">have</span></b>
+        <span>Hashed API keys, org scoping, roles, audit log.</span>
+        <span class="file">apiKeys.ts · lib/tenancy.ts</span>
+      </li>
+      <li>
+        <b>Training control plane <span class="verdict gap">gap</span></b>
+        <span>Session create/attach, the four primitives as durable RPCs, futures.</span>
+      </li>
+      <li>
+        <b>Adapter lifecycle <span class="verdict gap">gap</span></b>
+        <span>LoRA create, version, checkpoint, restore, garbage collect.</span>
+      </li>
+      <li>
+        <b>Pooled worker runtime <span class="verdict gap">gap</span></b>
+        <span>Resident base weights with hot adapter swap, and a scheduler over per-model pools.</span>
+      </li>
+      <li>
+        <b>Client SDK <span class="verdict gap">gap</span></b>
+        <span>The thin Python package that makes the whole thing feel local.</span>
+      </li>
+    </ul>
+
+    <h3>Two things that do not carry over</h3>
+    <p>
+      <strong>BYOC is incompatible with pooling.</strong> You cannot interleave
+      several customers' adapters inside one customer's own cloud account. A
+      Tinker-shaped product only exists in managed mode, so it is a second product
+      line beside BYOC rather than a feature of it.
+    </p>
+    <p>
+      <strong>It inverts your inventory risk.</strong> Today a customer rents a
+      deployment and carries the idle cost. Pooling moves that onto your balance
+      sheet: you hold capacity and lose money when it is quiet. That is a financing
+      decision as much as an engineering one.
+    </p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">If you build it</p>
+    <h2>The order that de-risks it</h2>
+    <p>
+      The temptation is to build the pooled runtime first, because it is the
+      interesting problem. It is also the one that can only be justified by demand
+      you do not have yet.
+    </p>
+
+    <ol class="steps">
+      <li>
+        <h3>Single-tenant training jobs, billed by the hour</h3>
+        <p>
+          Run a fine-tuning job on a dedicated instance using the provisioning you
+          already have. No pooling, no multiplexing, no new economics. This reuses
+          the provider integrations, the model catalog and the hourly metering
+          almost unchanged, and it answers the only question that matters: does
+          anyone want to train here at all.
+        </p>
+      </li>
+      <li>
+        <h3>Put the Tinker-shaped API on top of it</h3>
+        <p>
+          Same four primitives, same client ergonomics, but each session still owns
+          its worker. The economics are ordinary and the developer experience is
+          already the product. You learn the hard parts — durable sessions, adapter
+          checkpointing, sampling against live weights — while the scheduling
+          problem stays trivial.
+        </p>
+      </li>
+      <li>
+        <h3>Pool exactly one model</h3>
+        <p>
+          Pick whichever base model demand has concentrated on, and make a single
+          warm pool for it. Measure real utilization for a month. Per-token pricing
+          becomes defensible only once that number exists, and only for that model.
+        </p>
+      </li>
+      <li>
+        <h3>Widen, slowly, by measured demand</h3>
+        <p>
+          Each additional pooled model is a standing capacity bet. Add one when its
+          queue justifies it, and keep the long tail on single-tenant workers where
+          the customer carries the idle cost.
+        </p>
+      </li>
+    </ol>
+
+    <div class="callout">
+      <p>
+        The honest summary: steps 1 and 2 are a few weeks of work against
+        infrastructure you already own, and they are worth doing on their own merits.
+        Step 3 is where this stops being a feature and becomes a different company,
+        with inventory, utilization targets and a balance sheet to match.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="eyebrow">Sources</p>
+    <ul>
+      <li><a href="https://tinker-docs.thinkingmachines.ai/tinker/">Tinker documentation</a> — overview and SDK primitives</li>
+      <li><a href="https://tinker-docs.thinkingmachines.ai/tinker/models/">Models &amp; pricing</a> — current catalog and rates</li>
+      <li><a href="https://www.deeplearning.ai/the-batch/thinking-machines-new-tinker-api-makes-it-easier-to-fine-tune-models-on-many-gpus">The Batch</a> — how the LoRA sharing works</li>
+      <li><a href="https://venturebeat.com/ai/thinking-machines-first-official-product-is-here-meet-tinker-an-api-for">VentureBeat</a> and <a href="https://www.infoq.com/news/2025/10/thinking-machines-tinker">InfoQ</a> — launch coverage</li>
+    </ul>
+    <p class="meta">
+      Price aggregators disagree with each other on Tinker's rates; the figures here
+      are from the official docs. The Runara section is assembled from this
+      repository, not from anything Thinking Machines has published about how they
+      built it — the mechanism described above is inferred from their docs and from
+      how LoRA serving generally works.
+    </p>
+  </div>
+</footer>
+
+</body></html>
