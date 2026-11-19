@@ -181,6 +181,8 @@
     font-weight: 500;
   }
   td.num { text-align: right; }
+  th.ck, td.ck { text-align: center; }
+  td.ck { color: var(--accent); font-weight: 600; }
   tbody tr:last-child td { border-bottom: 0; }
 
   .steps { list-style: none; padding: 0; counter-reset: s; max-width: 100%; }
@@ -340,6 +342,26 @@
         adapter is the entire product you are building.
       </figcaption>
     </figure>
+
+    <h3>Who provides what</h3>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th></th><th class="ck">Tinker provides</th><th class="ck">Customer provides</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>GPUs, resident base weights</td><td class="ck">&#10003;</td><td class="ck"></td></tr>
+          <tr><td><code>forward_backward</code>, <code>optim_step</code>, <code>sample</code>, <code>save_state</code></td><td class="ck">&#10003;</td><td class="ck"></td></tr>
+          <tr><td>Scheduling, LoRA multiplexing, checkpointing</td><td class="ck">&#10003;</td><td class="ck"></td></tr>
+          <tr><td>The data</td><td class="ck"></td><td class="ck">&#10003;</td></tr>
+          <tr><td>Chat template / what to train on</td><td class="ck"></td><td class="ck">&#10003;</td></tr>
+          <tr><td><strong>The training loop</strong> &mdash; batching, epochs, when to stop</td><td class="ck"></td><td class="ck">&#10003;</td></tr>
+          <tr><td>Learning rate, Adam params, LoRA rank</td><td class="ck"></td><td class="ck">&#10003;</td></tr>
+          <tr><td>Evaluation &mdash; deciding it&rsquo;s good enough</td><td class="ck"></td><td class="ck">&#10003;</td></tr>
+          <tr><td>For RL: the reward function and environment</td><td class="ck"></td><td class="ck">&#10003;</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </section>
 
