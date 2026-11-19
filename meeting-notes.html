@@ -59,7 +59,7 @@
   fetch('meeting-notes/index.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(items){
     if(!items.length){list.innerHTML='<li><div style="padding:18px 20px"><div class="t">No meeting notes yet</div><div class="d">Notes will be listed here as they are added.</div></div></li>';return}
     list.innerHTML=items.map(function(i){
-      var t=esc(i.title)+(i.date?' <span style="font-weight:400;color:var(--fg-dim)">\u2014 '+esc(i.date)+'</span>':'');
+      var t=esc(i.title)+(i.date?' <span style="font-weight:400;color:var(--fg-dim)">\u2014 '+esc([i.date,i.time].filter(Boolean).join(' '))+'</span>':'');
       return '<li><a href="meeting-note.html?f='+encodeURIComponent(i.file)+'"><div class="t">'+t+'</div>'+(i.attendees?'<div class="d">'+esc(i.attendees)+'</div>':'')+'</a></li>'
     }).join('');
   }).catch(function(){list.innerHTML='<li><div style="padding:18px 20px"><div class="d">Could not load the notes list.</div></div></li>'});

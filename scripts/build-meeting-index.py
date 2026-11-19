@@ -5,6 +5,7 @@ Each note starts with:
 ---
 title: Weekly sync
 date: 2026-11-18
+time: 10:00 GMT-08:00   (optional)
 attendees: Name, Name
 ---
 Run:  python3 scripts/build-meeting-index.py
@@ -28,8 +29,9 @@ for p in sorted(root.glob("*.md")):
         "file": p.name,
         "title": meta.get("title", p.stem),
         "date": meta.get("date", ""),
+        "time": meta.get("time", ""),
         "attendees": meta.get("attendees", ""),
     })
-items.sort(key=lambda i: i["date"], reverse=True)
+items.sort(key=lambda i: (i["date"], i["time"]), reverse=True)
 (root / "index.json").write_text(json.dumps(items, indent=2) + "\n", encoding="utf-8")
 print(f"{len(items)} note(s) indexed")

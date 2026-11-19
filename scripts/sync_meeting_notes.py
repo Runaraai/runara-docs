@@ -29,7 +29,7 @@ USERS_FILE = pathlib.Path(__file__).resolve().parent / "meeting-notes-users.txt"
 DOMAIN = "runara.ai"
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 API = "https://www.googleapis.com/drive/v3"
-TITLE_RE = re.compile(r"^(?P<title>.*?)\s+-\s+(?P<y>\d{4})/(?P<m>\d{2})/(?P<d>\d{2})\b.*?-\s+Notes by Gemini\s*$")
+TITLE_RE = re.compile(r"^(?P<title>.*?)\s+-\s+(?P<y>\d{4})/(?P<m>\d{2})/(?P<d>\d{2})\b(?P<rest>.*?)\s*-\s+Notes by Gemini\s*$")
 
 
 def load_users():
@@ -44,11 +44,11 @@ def load_users():
 
 
 def parse_name(name, created):
-    """('Weekly sync', '2026-11-18') from 'Weekly sync - 2026/11/18 10:00 GMT-08:00 - Notes by Gemini'."""
+    """('Weekly sync', '2026-11-18', '10:00 GMT-08:00') from 'Weekly sync - 2026/11/18 10:00 GMT-08:00 - Notes by Gemini'."""
     m = TITLE_RE.match(name)
     if m:
-        return m["title"].strip(), f"{m['y']}-{m['m']}-{m['d']}"
-    return re.sub(r"\s*-\s*Notes by Gemini\s*$", "", name).strip() or name, created[:10]
+        return m["title"].strip(), f"{m['y']}-{m['m']}-{m['d']}", one_line(m["rest"])
+    return re.sub(r"\s*-\s*Notes by Gemini\s*$", "", name).strip() or name, created[:10], ""
 
 
 def slug(text):
@@ -78,13 +78,24 @@ def clean_body(body, stem):
     return IMG_RE.sub(to_file, body)
 
 
-def existing_source_ids():
-    ids = set()
+def existing_notes():
+    """{source_id: path} for notes already in the folder."""
+    notes = {}
     for p in NOTES_DIR.glob("*.md"):
         m = re.search(r"^source_id:\s*(\S+)", p.read_text(encoding="utf-8")[:1000], re.M)
         if m:
-            ids.add(m.group(1))
-    return ids
+            notes[m.group(1)] = p
+    return notes
+
+
+def backfill_time(path, time):
+    """Add a `time:` line to an existing note's front matter if it has none."""
+    text = path.read_text(encoding="utf-8")
+    head_end = text.find("\n---\n", 4)
+    if not time or head_end < 0 or re.search(r"^time:", text[:head_end], re.M):
+        return False
+    path.write_text(re.sub(r"^(date:.*)$", lambda m: m.group(1) + "\ntime: " + time, text, count=1, flags=re.M), encoding="utf-8")
+    return True
 
 
 def attendees_of(session, fid):
@@ -145,7 +156,7 @@ def main():
         return
     since = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=int(os.environ.get("LOOKBACK_DAYS", "3")))).strftime("%Y-%m-%dT%H:%M:%SZ")
     NOTES_DIR.mkdir(exist_ok=True)
-    seen = existing_source_ids()
+    notes = existing_notes()
     added = 0
     for user in users:
         try:
@@ -166,14 +177,18 @@ def main():
                 break
             data = r.json()
             for f in data.get("files", []):
-                if f["id"] in seen:
+                title, date, time_ = parse_name(f["name"], f["createdTime"])
+                if f["id"] in notes:
+                    if backfill_time(notes[f["id"]], time_):
+                        print(f"added time to {notes[f['id']].name}")
+                        added += 1
                     continue
-                title, date = parse_name(f["name"], f["createdTime"])
                 body = export_markdown(session, f["id"])
                 head = "\n".join([
                     "---",
                     f"title: {one_line(title)}",
                     f"date: {date}",
+                    *([f"time: {time_}"] if time_ else []),
                     f"attendees: {attendees_of(session, f['id'])}",
                     f"source_id: {f['id']}",
                     "---",
@@ -184,7 +199,7 @@ def main():
                     path = NOTES_DIR / f"{date}-{slug(title)}-{f['id'][:6]}.md"
                 body = clean_body(body, path.stem)
                 path.write_text(head + body.strip() + "\n", encoding="utf-8")
-                seen.add(f["id"])
+                notes[f["id"]] = path
                 added += 1
                 print(f"added {path.name}")
             page = data.get("nextPageToken")
