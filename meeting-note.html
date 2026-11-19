@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meeting Note</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#f7f5f1; --surface:#ffffff; --border:#e4ded3;
+    --fg:#211d16; --fg-dim:#6b6457;
+    --accent:#b5651d; --accent-fg:#fff8ef;
+    --display:'Source Serif 4', Georgia, serif;
+    --body:'IBM Plex Sans', system-ui, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#17140f; --surface:#1f1b14; --border:#332c21;
+      --fg:#efe9dd; --fg-dim:#a89f8e;
+      --accent:#e3974a; --accent-fg:#1a1208;
+      color-scheme: dark;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--fg); font-family:var(--body); line-height:1.6; padding-inline:16px}
+  h1{font-family:var(--display); text-wrap:balance}
+  .wrap{max-width:720px; margin:0 auto; padding-block:56px 96px}
+  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent)}
+  h1{font-size:clamp(28px,4vw,38px); margin:10px 0 10px; font-weight:700}
+  .thesis{font-size:16px; color:var(--fg-dim); margin:0 0 36px; max-width:62ch}
+  ul.docs{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px}
+  ul.docs li{background:var(--surface); border:1px solid var(--border); border-radius:8px}
+  ul.docs a{display:block; padding:18px 20px; text-decoration:none; color:var(--fg)}
+  ul.docs a:hover{border-color:var(--accent)}
+  ul.docs .t{font-weight:600; font-size:16px}
+  ul.docs .d{color:var(--fg-dim); font-size:13.5px; margin-top:4px}
+  footer{font-size:12px; color:var(--fg-dim); border-top:1px solid var(--border); padding-top:18px; margin-top:40px}
+  .site-home{position:fixed; top:14px; right:16px; z-index:1000; font-family:var(--mono); font-size:12px; color:var(--accent); text-decoration:none; border:1px solid var(--border); border-radius:6px; padding:7px 12px; background:var(--surface)}
+  .site-home:hover{border-color:var(--accent)}
+  @media (max-width:560px){ .site-home{font-size:11px; padding:6px 10px} }
+  .note{background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px 24px 20px}
+  .note h1,.note h2,.note h3{font-family:var(--display)}
+  .note h1{font-size:26px} .note h2{font-size:20px; margin-top:28px} .note h3{font-size:16px}
+  .note table{border-collapse:collapse; width:100%; font-size:14px}
+  .note th,.note td{border:1px solid var(--border); padding:6px 10px; text-align:left}
+  .note code{font-family:var(--mono); font-size:.9em}
+  .note a{color:var(--accent)}
+  .meta{font-family:var(--mono); font-size:12px; color:var(--fg-dim); margin:0 0 16px}
+</style>
+</head>
+<body>
+<a class="site-home" href="meeting-notes.html">&larr; Meeting Notes</a>
+<div class="wrap">
+  <div class="eyebrow">Runara &middot; meeting notes</div>
+  <p class="meta" id="meta"></p>
+  <article class="note" id="note">Loading&hellip;</article>
+  <footer>Notes are stored as Markdown in <code>meeting-notes/</code>.</footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script>
+(function(){
+  var f=new URLSearchParams(location.search).get('f')||'';
+  var el=document.getElementById('note');
+  if(!/^[A-Za-z0-9._-]+\.md$/.test(f)){el.textContent='Note not found.';return}
+  fetch('meeting-notes/'+f,{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){
+    var m=t.match(/^---\n([\s\S]*?)\n---\n/),meta={};
+    if(m){m[1].split('\n').forEach(function(l){var i=l.indexOf(':');if(i>0)meta[l.slice(0,i).trim()]=l.slice(i+1).trim()});t=t.slice(m[0].length)}
+    if(meta.title)document.title=meta.title+' \u2014 Meeting Notes';
+    document.getElementById('meta').textContent=[meta.date,meta.attendees].filter(Boolean).join(' \u00b7 ');
+    el.innerHTML=DOMPurify.sanitize(marked.parse((meta.title?'# '+meta.title+'\n\n':'')+t));
+  }).catch(function(){el.textContent='Note not found.'});
+})();
+</script>
+</body>
+</html>

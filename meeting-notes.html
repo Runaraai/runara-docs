@@ -48,13 +48,23 @@
   <div class="eyebrow">Runara &middot; engineering docs</div>
   <h1>Meeting Notes</h1>
   <p class="thesis">Notes, decisions and action items from Runara team meetings.</p>
-  <ul class="docs">
-    <li><div style="padding:18px 20px">
-      <div class="t">No meeting notes yet</div>
-      <div class="d">Notes will be listed here as they are added.</div>
-    </div></li>
+  <ul class="docs" id="list">
+    <li><div style="padding:18px 20px"><div class="d">Loading&hellip;</div></div></li>
   </ul>
   <footer>Published from Claude artifacts.</footer>
 </div>
+<script>
+(function(){
+  var list=document.getElementById('list');
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':String(t);return d.innerHTML}
+  fetch('meeting-notes/index.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(items){
+    if(!items.length){list.innerHTML='<li><div style="padding:18px 20px"><div class="t">No meeting notes yet</div><div class="d">Notes will be listed here as they are added.</div></div></li>';return}
+    list.innerHTML=items.map(function(i){
+      var meta=[i.date,i.attendees].filter(Boolean).join(' \u00b7 ');
+      return '<li><a href="meeting-note.html?f='+encodeURIComponent(i.file)+'"><div class="t">'+esc(i.title)+'</div>'+(meta?'<div class="d">'+esc(meta)+'</div>':'')+'</a></li>'
+    }).join('');
+  }).catch(function(){list.innerHTML='<li><div style="padding:18px 20px"><div class="d">Could not load the notes list.</div></div></li>'});
+})();
+</script>
 </body>
 </html>

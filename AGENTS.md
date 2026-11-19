@@ -95,3 +95,10 @@ silently bump it.
   that shouldn't be public (internal credentials, unredacted customer data,
   etc.) — these pages are meant to be publicly readable engineering docs,
   not a dumping ground for anything drafted internally.
+
+## Meeting notes
+
+Notes are Markdown files in `meeting-notes/` (see `meeting-notes/README.md` for the front matter).
+`meeting-notes.html` lists them from `meeting-notes/index.json`; `meeting-note.html?f=<file>`
+renders one. After adding a note, run `python3 scripts/build-meeting-index.py` and commit the
+regenerated `index.json`.
