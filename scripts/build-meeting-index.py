@@ -14,6 +14,8 @@ import json, pathlib, re
 root = pathlib.Path(__file__).resolve().parent.parent / "meeting-notes"
 items = []
 for p in sorted(root.glob("*.md")):
+    if p.name.lower() == "readme.md":
+        continue
     text = p.read_text(encoding="utf-8")
     m = re.match(r"---\n(.*?)\n---\n", text, re.S)
     meta = {}
