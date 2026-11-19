@@ -26,12 +26,12 @@
   *{box-sizing:border-box}
   body{margin:0; background:var(--bg); color:var(--fg); font-family:var(--body); line-height:1.6; padding-inline:16px}
   h1{font-family:var(--display); text-wrap:balance}
-  .wrap{max-width:720px; margin:0 auto; padding-block:56px 96px}
+  .wrap{max-width:960px; margin:0 auto; padding-block:56px 96px}
   .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent)}
   h1{font-size:clamp(28px,4vw,38px); margin:10px 0 10px; font-weight:700}
   .thesis{font-size:16px; color:var(--fg-dim); margin:0 0 36px; max-width:62ch}
-  .choices{display:grid; grid-template-columns:1fr 1fr; gap:14px}
-  @media (max-width:560px){ .choices{grid-template-columns:1fr} }
+  .choices{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  @media (max-width:760px){ .choices{grid-template-columns:1fr} }
   .choices a{display:flex; flex-direction:column; height:100%; padding:22px 22px 20px; background:var(--surface); border:1px solid var(--border); border-radius:10px; text-decoration:none; color:var(--fg)}
   .choices a:hover{border-color:var(--accent)}
   .choices .t{font-family:var(--display); font-weight:600; font-size:20px}
@@ -55,6 +55,11 @@
       <div class="t">Runara GDrive Docs</div>
       <div class="d">The shared Google Drive folder of Runara documents. Opens in Google Drive; access depends on your Google account.</div>
       <div class="go">Open Google Drive &nearr;</div>
+    </a>
+    <a href="meeting-notes.html">
+      <div class="t">Meeting Notes</div>
+      <div class="d">Notes, decisions and action items from Runara team meetings.</div>
+      <div class="go">Open meeting notes &rarr;</div>
     </a>
   </div>
   <footer>Published from Claude artifacts.</footer>

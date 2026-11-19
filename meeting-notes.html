@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Runara Meeting Notes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#f7f5f1; --surface:#ffffff; --border:#e4ded3;
+    --fg:#211d16; --fg-dim:#6b6457;
+    --accent:#b5651d; --accent-fg:#fff8ef;
+    --display:'Source Serif 4', Georgia, serif;
+    --body:'IBM Plex Sans', system-ui, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#17140f; --surface:#1f1b14; --border:#332c21;
+      --fg:#efe9dd; --fg-dim:#a89f8e;
+      --accent:#e3974a; --accent-fg:#1a1208;
+      color-scheme: dark;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--fg); font-family:var(--body); line-height:1.6; padding-inline:16px}
+  h1{font-family:var(--display); text-wrap:balance}
+  .wrap{max-width:720px; margin:0 auto; padding-block:56px 96px}
+  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent)}
+  h1{font-size:clamp(28px,4vw,38px); margin:10px 0 10px; font-weight:700}
+  .thesis{font-size:16px; color:var(--fg-dim); margin:0 0 36px; max-width:62ch}
+  ul.docs{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px}
+  ul.docs li{background:var(--surface); border:1px solid var(--border); border-radius:8px}
+  ul.docs a{display:block; padding:18px 20px; text-decoration:none; color:var(--fg)}
+  ul.docs a:hover{border-color:var(--accent)}
+  ul.docs .t{font-weight:600; font-size:16px}
+  ul.docs .d{color:var(--fg-dim); font-size:13.5px; margin-top:4px}
+  footer{font-size:12px; color:var(--fg-dim); border-top:1px solid var(--border); padding-top:18px; margin-top:40px}
+  .site-home{position:fixed; top:14px; right:16px; z-index:1000; font-family:var(--mono); font-size:12px; color:var(--accent); text-decoration:none; border:1px solid var(--border); border-radius:6px; padding:7px 12px; background:var(--surface)}
+  .site-home:hover{border-color:var(--accent)}
+  @media (max-width:560px){ .site-home{font-size:11px; padding:6px 10px} }
+</style>
+</head>
+<body>
+<a class="site-home" href="index.html">&larr; Home</a>
+<div class="wrap">
+  <div class="eyebrow">Runara &middot; engineering docs</div>
+  <h1>Meeting Notes</h1>
+  <p class="thesis">Notes, decisions and action items from Runara team meetings.</p>
+  <ul class="docs">
+    <li><div style="padding:18px 20px">
+      <div class="t">No meeting notes yet</div>
+      <div class="d">Notes will be listed here as they are added.</div>
+    </div></li>
+  </ul>
+  <footer>Published from Claude artifacts.</footer>
+</div>
+</body>
+</html>

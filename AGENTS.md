@@ -9,9 +9,9 @@ A static site published via GitHub Pages at
 **https://runaraai.github.io/runara-docs/**. Each page is a
 single self-contained `.html` file (own `<style>`, no shared CSS file, no
 build step) — most started life as a Claude Artifact and were republished
-here as plain static pages. `index.html` is the landing page (a chooser between Artifacts and the
-Google Drive docs folder); `artifacts.html` is the list that must link
-every other page.
+here as plain static pages. `index.html` is the landing page (a chooser between Artifacts, the
+Google Drive docs folder and Meeting Notes); `artifacts.html` is the list that must link
+every other artifact page, and `meeting-notes.html` is the list for meeting notes.
 
 There is no build/CI step. Pushing to `master` deploys automatically —
 GitHub Pages rebuilds and serves the new content within roughly a minute.
