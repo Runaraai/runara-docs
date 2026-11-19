@@ -1,6 +1,7 @@
 ---
 title: amd presentation sync
 date: 2026-11-17
+time: 15:07 PST
 attendees: Abhinaya Krishnamoorthy, Alon Konchitsky, Bahul Harikumar, Dhaval Ajmera
 source_id: 1Eow62t7z_jzhJq7n7nWyUY9MuvAjQBeNCvdUyGzaD50
 ---
