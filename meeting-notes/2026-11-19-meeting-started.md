@@ -1,6 +1,7 @@
 ---
-title: Meeting started 2026/11/19 11:07 PST
+title: Meeting started
 date: 2026-11-19
+time: 11:07 PST
 attendees: Niraj Dalavi
 source_id: 1y7kGtG53_XII-wYBAh9oYgHKXKycOCEWEf6VgBvGQvY
 ---

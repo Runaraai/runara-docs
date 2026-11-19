@@ -29,7 +29,7 @@ USERS_FILE = pathlib.Path(__file__).resolve().parent / "meeting-notes-users.txt"
 DOMAIN = "runara.ai"
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 API = "https://www.googleapis.com/drive/v3"
-TITLE_RE = re.compile(r"^(?P<title>.*?)\s+-\s+(?P<y>\d{4})/(?P<m>\d{2})/(?P<d>\d{2})\b(?P<rest>.*?)\s*-\s+Notes by Gemini\s*$")
+TITLE_RE = re.compile(r"^(?P<title>.*?)\s+(?:-\s+)?(?P<y>\d{4})/(?P<m>\d{2})/(?P<d>\d{2})\b(?P<rest>.*?)\s*-\s+Notes by Gemini\s*$")
 
 
 def load_users():
