@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write   # lets the job federate into Google Cloud (Workload Identity Federation)
 
 concurrency:
   group: sync-meeting-notes
@@ -21,9 +22,13 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install google-auth requests
+      - name: Authenticate to Google Cloud (keyless)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/796873480798/locations/global/workloadIdentityPools/github-actions/providers/github
       - name: Copy new Gemini notes from Drive
         env:
-          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          SERVICE_ACCOUNT_EMAIL: meeting-notes-sync@main-entropy-495701-p6.iam.gserviceaccount.com
         run: python scripts/sync_meeting_notes.py
       - run: python scripts/build-meeting-index.py
       - name: Commit and push

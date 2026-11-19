@@ -7,7 +7,12 @@ docs they OWN that changed recently, export each as Markdown and write it to
 meeting-notes/ with a front-matter header. A note whose source_id is already
 in the folder is skipped, so edits made in the repo are never overwritten.
 
-Env: GOOGLE_SERVICE_ACCOUNT_JSON (key file contents), LOOKBACK_DAYS (default 3).
+Auth is keyless: GitHub Actions federates into Google (Workload Identity Federation) and the
+resulting credentials call IAM signJwt on SERVICE_ACCOUNT_EMAIL to mint a domain-wide-delegation
+token for each user.
+
+Env: SERVICE_ACCOUNT_EMAIL, LOOKBACK_DAYS (default 3). Application Default Credentials must be set
+(the workflow's google-github-actions/auth step does this).
 """
 import datetime as dt
 import json
@@ -15,6 +20,7 @@ import os
 import pathlib
 import re
 import sys
+import time
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 NOTES_DIR = ROOT / "meeting-notes"
@@ -81,24 +87,52 @@ def export_markdown(session, fid):
     r.raise_for_status()
 
 
+def user_session(adc, sa_email, user):
+    """Requests session carrying a Drive token for `user`, via DWD, signed keylessly through IAM."""
+    import requests
+    now = int(time.time())
+    payload = json.dumps({
+        "iss": sa_email, "sub": user, "scope": " ".join(SCOPES),
+        "aud": "https://oauth2.googleapis.com/token", "iat": now, "exp": now + 3600,
+    })
+    r = adc.post(f"https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/{sa_email}:signJwt",
+                 json={"payload": payload})
+    r.raise_for_status()
+    t = requests.post("https://oauth2.googleapis.com/token", data={
+        "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer", "assertion": r.json()["signedJwt"]})
+    if not t.ok:
+        raise RuntimeError(f"token exchange for {user} failed: {t.status_code} {t.text[:200]}")
+    session = requests.Session()
+    session.headers["Authorization"] = "Bearer " + t.json()["access_token"]
+    return session
+
+
 def main():
-    from google.oauth2 import service_account
+    import google.auth
     from google.auth.transport.requests import AuthorizedSession
 
-    if not os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON"):
-        print("::warning::GOOGLE_SERVICE_ACCOUNT_JSON secret is not set; skipping sync")
+    sa_email = os.environ.get("SERVICE_ACCOUNT_EMAIL")
+    if not sa_email:
+        print("::warning::SERVICE_ACCOUNT_EMAIL is not set; skipping sync")
         return
-    info = json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
+    adc_creds, _ = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+    from google.auth.transport.requests import Request
+    adc_creds.refresh(Request())  # fails fast if the keyless federation is broken
+    adc = AuthorizedSession(adc_creds)
     users = load_users()
     if not users:
-        sys.exit("scripts/meeting-notes-users.txt has no users")
+        print("::warning::scripts/meeting-notes-users.txt has no users; nothing to scan")
+        return
     since = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=int(os.environ.get("LOOKBACK_DAYS", "3")))).strftime("%Y-%m-%dT%H:%M:%SZ")
     NOTES_DIR.mkdir(exist_ok=True)
     seen = existing_source_ids()
     added = 0
     for user in users:
-        creds = service_account.Credentials.from_service_account_info(info, scopes=SCOPES, subject=user)
-        session = AuthorizedSession(creds)
+        try:
+            session = user_session(adc, sa_email, user)
+        except Exception as e:
+            print(f"::warning::{user}: {e}")
+            continue
         q = ("mimeType='application/vnd.google-apps.document' and name contains 'Notes by Gemini' "
              f"and 'me' in owners and trashed=false and modifiedTime > '{since}'")
         page = None

@@ -18,16 +18,18 @@ After adding or editing notes run `python3 scripts/build-meeting-index.py` and c
 `scripts/sync_meeting_notes.py`, which copies new "Notes by Gemini" docs from Drive into this folder,
 rebuilds `index.json` and commits. Notes already present (matched by `source_id`) are never overwritten.
 
-One-time setup (needs a Google Workspace super admin):
+Auth is keyless (Workload Identity Federation): no secret is stored in GitHub. The workflow federates into
+Google Cloud project `main-entropy-495701-p6`, then uses the service account
+`meeting-notes-sync@main-entropy-495701-p6.iam.gserviceaccount.com` with domain-wide delegation to read Drive.
+Only this repo's `master` branch is allowed to do that.
 
-1. In a Google Cloud project, enable the **Google Drive API**.
-2. Create a service account (e.g. `meeting-notes-sync`) and a JSON key for it. Note its numeric **Client ID**.
-3. Admin console → Security → Access and data control → API controls → **Manage Domain Wide Delegation** →
-   add the Client ID with the single scope `https://www.googleapis.com/auth/drive.readonly`.
-4. In this GitHub repo: Settings → Secrets and variables → Actions → new secret
-   `GOOGLE_SERVICE_ACCOUNT_JSON` containing the whole key file.
-5. List the `@runara.ai` emails to scan in `scripts/meeting-notes-users.txt`, push, then run the
-   workflow once from the Actions tab.
+Remaining setup (already done: project, service account, workload identity pool):
+
+1. A Workspace super admin: Admin console → Security → Access and data control → API controls →
+   **Manage Domain Wide Delegation** → add Client ID `111844503728521296630` with the single scope
+   `https://www.googleapis.com/auth/drive.readonly`.
+2. List the `@runara.ai` emails to scan in `scripts/meeting-notes-users.txt` and push.
+3. Run the workflow once from the Actions tab to check it.
 
 Gemini notes only exist for meetings where "Take notes for me" was on, and are owned by the organizer,
 so list everyone who may organize meetings.
