@@ -1,0 +1,2 @@
+# One @runara.ai email per line: the people whose Drive is scanned for Gemini notes.
+# Gemini notes are owned by the meeting organizer, so list everyone who may organize meetings.
