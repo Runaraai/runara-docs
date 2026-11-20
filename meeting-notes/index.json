@@ -7,6 +7,41 @@
     "attendees": "Abhinaya Krishnamoorthy, Utkarsh Pradipkumar"
   },
   {
+    "file": "2026-11-19-gal-oz.md",
+    "title": "Gal <> Oz",
+    "date": "2026-11-19",
+    "time": "07:42 PST",
+    "attendees": "Alon Konchitsky, Dhaval Ajmera, Oz Nakash"
+  },
+  {
+    "file": "2026-11-18-subash-oz.md",
+    "title": "Subash <> Oz",
+    "date": "2026-11-18",
+    "time": "15:25 PST",
+    "attendees": "Oz Nakash, Subhash Kotaru"
+  },
+  {
+    "file": "2026-11-18-niraj-oz.md",
+    "title": "Niraj <> Oz",
+    "date": "2026-11-18",
+    "time": "14:43 PST",
+    "attendees": "Niraj Dalavi, Oz Nakash"
+  },
+  {
+    "file": "2026-11-18-dry-run.md",
+    "title": "Dry run",
+    "date": "2026-11-18",
+    "time": "08:31 PST",
+    "attendees": "Abhinaya Krishnamoorthy, Alon Konchitsky, Bahul Harikumar, Dhaval Ajmera, Oz Nakash"
+  },
+  {
+    "file": "2026-11-17-customer-and-fundraising-pipelines-review.md",
+    "title": "Customer and Fundraising pipelines - review",
+    "date": "2026-11-17",
+    "time": "15:32 PST",
+    "attendees": "Adam Tachner, Alon Konchitsky, Dhaval Ajmera, Oz Nakash"
+  },
+  {
     "file": "2026-11-17-amd-presentation-sync.md",
     "title": "amd presentation sync",
     "date": "2026-11-17",
@@ -19,5 +54,12 @@
     "date": "2026-11-17",
     "time": "14:28 PST",
     "attendees": "Abhinaya Krishnamoorthy, Bahul Harikumar, Dhaval Ajmera"
+  },
+  {
+    "file": "2026-11-13-meeting-notes-nvidia-prep.md",
+    "title": "Meeting notes Nvidia prep",
+    "date": "2026-11-13",
+    "time": "11:00 PST",
+    "attendees": "Abhinaya Krishnamoorthy, Adam Tachner, Alon Konchitsky, Oz Nakash"
   }
 ]
